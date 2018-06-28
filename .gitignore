@@ -2,4 +2,4 @@ Data/
 .DS_Store
 *.m~
 .Rproj.user
-
+.Rhistory
