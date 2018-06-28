@@ -1,0 +1,117 @@
+---
+title: "Power Analysis"
+author: "Usman Rashid"
+date: "6/4/2018"
+output: pdf_document
+
+#   Copyright (C) 2018 Usman Rashid
+#   urashid@aut.ac.nz
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 3 of the License, or
+#   (at your option) any later version.
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Models for Power Analysis
+```{r data_setup, echo=FALSE, include=FALSE}
+
+# Load packages
+rm(list = ls())
+require(ggplot2)
+require(lme4)
+require(car)
+require(MASS)
+require(sjstats)
+require(fBasics)
+require(ggpubr)
+require(reshape2)
+require(phia)
+require(lsmeans)
+require(multcomp)
+
+# function for is nan
+is.nan.data.frame <- function(x)
+  do.call(cbind, lapply(x, is.nan))
+
+
+# Load data <PowerTable.csv>
+dataSource <- read.csv("../Data/Step V/PowerTable.csv")
+dataSource[is.nan(dataSource)] <- NA
+dataSource$partNum <- as.factor(dataSource$partNum)
+dataSource$sessNum <- as.factor(dataSource$sessNum)
+dataSource$mvNum <- as.factor(dataSource$mvNum)
+dataSource$sysNum <- as.factor(dataSource$sysNum)
+dataSource$mvNum <- as.factor(dataSource$mvNum)
+dataSource$paraNum <- as.factor(dataSource$paraNum)
+
+# Create data subsets
+selfPacedData <- subset(dataSource, paraNum == 1)
+validityData <- subset(selfPacedData, sessNum != 4)
+
+# Add names for systems and movements.
+validityData$mvName <- factor(validityData$mvNum, labels = c("Dorsiflexion", "Step on/off"))
+validityData$sysName <- factor(validityData$sysNum, labels = c("Gold Standard", "Prototype"))
+
+# Find power ratio
+dorsPower <- subset(validityData, mvNum == 1)
+stepPower <- subset(validityData, mvNum == 2)
+
+powerRatio <- stepPower # mvNum is meaningless in this dataframe
+powerRatio[,6:9] <- stepPower[,6:9] / dorsPower[,6:9]
+powerRatio <- melt(powerRatio, id.vars = c("partNum", "sessNum", "sysName"), 
+                   measure.vars = c("PWR_d", "PWR_t", "PWR_a", "PWR_b"),
+                   variable.name = "bandName")
+
+# Model for power ratio
+ratioModel <- lmer(value ~ sysName + bandName + sysName*bandName + (1 | partNum), powerRatio)
+
+# Setup movement power for models
+dorsPower <- melt(dorsPower, id.vars = c("partNum", "sessNum", "sysName"), 
+                   measure.vars = c("PWR_d", "PWR_t", "PWR_a", "PWR_b"),
+                   variable.name = "bandName")
+
+stepPower <- melt(stepPower, id.vars = c("partNum", "sessNum", "sysName"), 
+                   measure.vars = c("PWR_d", "PWR_t", "PWR_a", "PWR_b"),
+                   variable.name = "bandName")
+
+# Model for dorsiflexion
+dorsPowerModel <- lmer(value ~ sysName + bandName + sysName*bandName + (1 | partNum), dorsPower)
+
+# Model for step on/off
+stepPowerModel <- lmer(value ~ sysName + bandName + sysName*bandName+ (1 | partNum), stepPower)
+```
+
+## Power Ratio
+
+```{r results_for_power_ratio}
+plot(ratioModel)
+ggqqplot(resid(ratioModel))
+summary(ratioModel)
+Anova(ratioModel)
+lsmeans(ratioModel, pairwise ~ sysName | bandName, adjust = "tukey")
+```
+
+## Dorsiflexion
+
+```{r results_for_dors}
+plot(dorsPowerModel)
+ggqqplot(resid(dorsPowerModel))
+summary(dorsPowerModel)
+Anova(dorsPowerModel)
+lsmeans(dorsPowerModel, pairwise ~ sysName | bandName, adjust = "tukey")
+```
+
+## Step on/off
+
+```{r results_for_step}
+plot(stepPowerModel)
+ggqqplot(resid(stepPowerModel))
+summary(stepPowerModel)
+Anova(stepPowerModel)
+lsmeans(stepPowerModel, pairwise ~ sysName | bandName, adjust = "tukey")
+```

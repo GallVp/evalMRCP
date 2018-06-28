@@ -1,0 +1,138 @@
+---
+title: "Performance Measures Comparison for Prototype against the Gold Standard"
+author: "Usman Rashid"
+date: "5/29/2018"
+output:
+  pdf_document: default
+  html_document: default
+
+#   Copyright (C) 2018 Usman Rashid
+#   urashid@aut.ac.nz
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 3 of the License, or
+#   (at your option) any later version.
+---
+
+### Note: Normality and Homogenity of Variance Assumptions
+Normality of residuals and homogenity checked with scatter plots, QQ-plots with 95% confidence.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r data_setup, echo=FALSE, include=FALSE}
+# Load packages
+rm(list = ls())
+require(ggplot2)
+require(lme4)
+require(car)
+require(MASS)
+require(sjstats)
+require(fBasics)
+require(ggpubr)
+require(reshape2)
+require(phia)
+require(lsmeans)
+require(multcomp)
+
+# function for is nan
+is.nan.data.frame <- function(x)
+  do.call(cbind, lapply(x, is.nan))
+
+
+# Load data <PowerTable.csv>
+dataSource <- read.csv("../Data/Step V/MeasuresTable.csv")
+dataSource[is.nan(dataSource)] <- NA
+dataSource$partNum <- as.factor(dataSource$partNum)
+dataSource$sessNum <- as.factor(dataSource$sessNum)
+dataSource$mvNum <- as.factor(dataSource$mvNum)
+dataSource$sysNum <- as.factor(dataSource$sysNum)
+dataSource$mvNum <- as.factor(dataSource$mvNum)
+dataSource$paraNum <- as.factor(dataSource$paraNum)
+
+# Create data subsets
+selfPacedData <- subset(dataSource, paraNum == 1)
+validityData <- subset(selfPacedData, sessNum != 4)
+
+# Add names for movements and systems
+validityData$mvName <- factor(validityData$mvNum, labels = c("Dorsiflexion", "Step on/off"))
+validityData$sysName <- factor(validityData$sysNum, labels = c("Gold Standard", "Prototype"))
+```
+# Peak negative value (PN)
+```{r pn_analysis, include = FALSE, echo=FALSE}
+# Plot results
+pnPlot <- ggplot(validityData, aes(x = mvName, y = PN)) +
+geom_point(aes(colour = factor(sysName)), size = 5, shape = "+") + 
+  theme_light() + labs(y = "Amplitude (uV)", x = "Movements")
+
+# Build and run model
+pnModel <- lmer(PN ~ mvName + sysName + mvName*sysName + (1|partNum), validityData)
+```
+
+```{r pn_results}
+plot(pnModel)
+ggqqplot(resid(pnModel))
+summary(pnModel)
+Anova(pnModel)
+lsmeans(pnModel, pairwise ~ sysName | mvName, adjust = "tukey")
+```
+
+# Peak negative value time (PNT)
+```{r pnt_analysis, include = FALSE, echo=FALSE}
+# Plot results
+pntPlot <- ggplot(validityData, aes(x = mvName, y = PNT)) +
+geom_point(aes(colour = factor(sysName)), size = 5, shape = "+") + 
+  theme_light() + labs(y = "Time (ms)", x = "Movements")
+
+# Build and run model
+pntModel <- lmer(PNT ~ mvName + sysName + mvName*sysName + (1|partNum), validityData)
+
+```
+
+```{r pnt_results}
+plot(pntModel)
+ggqqplot(resid(pntModel))
+summary(pntModel)
+Anova(pntModel)
+lsmeans(pntModel, pairwise ~ sysName | mvName, adjust = "tukey")
+```
+
+# Premovement noise (PMN)
+```{r pmn_analysis, include = FALSE, echo=FALSE}
+# Plot results
+pmnPlot <- ggplot(validityData, aes(x = mvName, y = PMN)) +
+geom_point(aes(colour = factor(sysName)), size = 5, shape = "+") + 
+  theme_light() + labs(y = "Amplitude (uVrms)", x = "Movements")
+
+# Build and run model
+pmnModel <- glmer(PMN ~ mvName + sysName + mvName*sysName + (1|partNum), validityData, family = Gamma(link="log"))
+```
+
+```{r pmn_results}
+plot(pmnModel)
+ggqqplot(resid(pmnModel))
+summary(pmnModel)
+Anova(pmnModel)
+lsmeans(pmnModel, pairwise ~ sysName | mvName, adjust = "tukey")
+```
+
+# Signal to noise ratio (SNR)
+```{r snr_analysis, include = FALSE, echo=FALSE}
+# Plot results
+snrPlot <- ggplot(validityData, aes(x = mvName, y = SNR)) +
+geom_point(aes(colour = factor(sysName)), size = 5, shape = "+") + 
+  theme_light() + labs(y = "SNR (dB)", x = "Movements")
+
+# Build and run model
+snrModel <- lmer(SNR ~mvName + sysName + mvName*sysName + (1|partNum), validityData)
+```
+
+```{r snr_results}
+plot(snrModel)
+ggqqplot(resid(snrModel))
+summary(snrModel)
+Anova(snrModel)
+lsmeans(snrModel, pairwise ~ sysName | mvName, adjust = "tukey")
+```
