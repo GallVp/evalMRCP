@@ -19,7 +19,7 @@ loadedData = load(fileName);
 
 %% Construct manifest string
 % Get the tokens
-subSessMovTokens = regexp(fileName, '.*sub([0-9]+)_sess([0-9]+)_mov([0-9]+)', 'tokens');
+subSessMovTokens = regexp(fileName, '.*sub([0-9]+)_sess([0-9]+).*', 'tokens');
 subSessMovTokens = subSessMovTokens{1};
 
 % Construct title string

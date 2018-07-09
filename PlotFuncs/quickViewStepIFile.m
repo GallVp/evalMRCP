@@ -16,7 +16,7 @@ function [loadedData, fileName, eegFig, emgFig, titleString] = quickViewStepIFil
 PARADIGM_CUED = 'Cued';
 
 %% Get file tokens
-subSessMovTokens = regexp(fileName, '.*sub([0-9]+)_sess([0-9]+)_mov([0-9]+)', 'tokens');
+subSessMovTokens = regexp(fileName, '.*sub([0-9]+)_sess([0-9]+).*', 'tokens');
 subSessMovTokens = subSessMovTokens{1};
 
 % Load the file
@@ -62,6 +62,8 @@ if(size(loadedData.emgData, 2) == 2)
 else
     options.legendInfo = loadedData.emgChannels;
     options.title = sprintf('EMG: %s', titleString);
-    emgFig = plotChannelData(loadedData.emgData, loadedData.sampleRate, options);
+    if(~isempty(loadedData.emgData))
+        emgFig = plotChannelData(loadedData.emgData, loadedData.sampleRate, options);
+    end
 end
 end

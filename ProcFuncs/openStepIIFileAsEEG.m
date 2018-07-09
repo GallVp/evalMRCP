@@ -21,7 +21,7 @@ loadedData = load(fileName);
 locFile = readlocs(electrodeSetupAscFile, 'filetype', 'asc');
 
 %% Get file tokens
-subSessMovTokens = regexp(fileName, '.*sub([0-9]+)_sess([0-9]+)_mov([0-9]+).mat', 'tokens');
+subSessMovTokens = regexp(fileName, '.*sub([0-9]+)_sess([0-9]+).*', 'tokens');
 subSessMovTokens = subSessMovTokens{1};
 
 %% Prepare event vector
@@ -49,7 +49,7 @@ manifestString = sprintf('%s, Sub %s, Sess %s, %s, %s%s\nDetected: %d, Selected:
     loadedData.paradigm, numEvents, numDetected, numSelected, numChanged);
 
 %% Prepared EEG struct
-EEG.setname                         = sprintf('Sub: %s, Sess: %s, Mov: %s', subSessMovTokens{1}, subSessMovTokens{2}, subSessMovTokens{3});
+EEG.setname                         = sprintf('Sub: %s, Sess: %s, Mov: %s', subSessMovTokens{1}, subSessMovTokens{2}, loadedData.task);
 EEG.filename                        = fileName;
 EEG.filepath                        = [];
 EEG.subject                         = subSessMovTokens{1};

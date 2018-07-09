@@ -32,43 +32,55 @@ FILTER_ORDER            = 2;
 
 %% Load Data
 loadedData= load(fileName);
-
-%% Combine EMG Channels
-differentialEMGChannel = loadedData.emgData(:, 2) - loadedData.emgData(:, 1);
-
-%% Remove DC from data.
-detrendedEMGData = removeDC(differentialEMGChannel, loadedData.sampleRate);
-
-%% Remove 'Impulse' Artefacts from prototype data
-if(strcmp(loadedData.system, SYSTEM_PROTOTYPE))
-    [impulseRemovedEMGData, ~] = removeImpulseArtefact(detrendedEMGData, SHOW_DIAGNOSTIC_PLOTS);
+if(~isempty(loadedData.emgData))
+    
+    %% Combine EMG Channels
+    differentialEMGChannel = loadedData.emgData(:, 2) - loadedData.emgData(:, 1);
+    
+    %% Remove DC from data.
+    detrendedEMGData = removeDC(differentialEMGChannel, loadedData.sampleRate);
+    
+    %% Remove 'Impulse' Artefacts from prototype data
+    if(strcmp(loadedData.system, SYSTEM_PROTOTYPE))
+        [impulseRemovedEMGData, ~] = removeImpulseArtefact(detrendedEMGData, SHOW_DIAGNOSTIC_PLOTS);
+    else
+        impulseRemovedEMGData = detrendedEMGData;
+    end
+    
+    %% Filter EMG Data
+    impulseRemovedEMGData = filterStream(impulseRemovedEMGData, loadedData.sampleRate, FILTER_ORDER, loadedData.sampleRate / 2.5, 10);
+    
+    %% Create EMG struct and load task based detection options
+    inEMG.channelData = impulseRemovedEMGData;
+    inEMG.fs = loadedData.sampleRate;
+    inEMG.channelNames = {'EMG2 - EMG1'};
+    
+    options.subParams  = getTaskBasedEMGOptions(loadedData.task);
+    
+    %% Find events from EMG data using emgGo
+    [outEMG, outDetectionOptions] = emgEventsDetectTool(inEMG, options);
+    
+    %% Find onsets and offsets using final parameters.
+    [detectedOnsets, detectedOffsets]               = extendedDTA(inEMG.channelData, inEMG.fs, outDetectionOptions);
+    
+    %% Save EMAT files
+    processedData = loadedData;
+    processedData.saveDate = date;
+    processedData.processedEmgData = outEMG.channelData;
+    processedData.detectedOnsets = detectedOnsets;
+    processedData.detectedOffsets = detectedOffsets;
+    processedData.adjustedOnsets = outEMG.events.onSets;
+    processedData.adjustedOffsets = outEMG.events.offSets;
+    processedData.detectionOptions = outDetectionOptions;
 else
-    impulseRemovedEMGData = detrendedEMGData;
+        %% Save EMAT files
+    processedData = loadedData;
+    processedData.saveDate = date;
+    processedData.processedEmgData = [];
+    processedData.detectedOnsets = [];
+    processedData.detectedOffsets = [];
+    processedData.adjustedOnsets = [];
+    processedData.adjustedOffsets = [];
+    processedData.detectionOptions = [];
 end
-
-%% Filter EMG Data
-impulseRemovedEMGData = filterStream(impulseRemovedEMGData, loadedData.sampleRate, FILTER_ORDER, loadedData.sampleRate / 2.5, 10);
-
-%% Create EMG struct and load task based detection options
-inEMG.channelData = impulseRemovedEMGData;
-inEMG.fs = loadedData.sampleRate;
-inEMG.channelNames = {'EMG2 - EMG1'};
-
-options.subParams  = getTaskBasedEMGOptions(loadedData.task);
-
-%% Find events from EMG data using emgGo
-[outEMG, outDetectionOptions] = emgEventsDetectTool(inEMG, options);
-
-%% Find onsets and offsets using final parameters.
-[detectedOnsets, detectedOffsets]               = extendedDTA(inEMG.channelData, inEMG.fs, outDetectionOptions);
-
-%% Save EMAT files
-processedData = loadedData;
-processedData.saveDate = date;
-processedData.processedEmgData = outEMG.channelData;
-processedData.detectedOnsets = detectedOnsets;
-processedData.detectedOffsets = detectedOffsets;
-processedData.adjustedOnsets = outEMG.events.onSets;
-processedData.adjustedOffsets = outEMG.events.offSets;
-processedData.detectionOptions = outDetectionOptions;
 end

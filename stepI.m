@@ -18,7 +18,7 @@ DATA_FOLDER      = fullfile(pwd, 'Data');
 INPUT_FOLDER     = fullfile(DATA_FOLDER, 'Step Zero');
 OUTPUT_FOLDER    = fullfile(DATA_FOLDER, 'Step I');
 SYSTEM_PROC_MAP  = {'Gold Standard', @importGoldStandardData;...
-    'Prototype', @importPrototypeData};
+    'Prototype', @importPrototypeData; 'NuAmps2', @importNuAmpsData};
 
 % Ask user to select from avilable systems. Each folder in Step Zero folder
 % represents a system or file type.

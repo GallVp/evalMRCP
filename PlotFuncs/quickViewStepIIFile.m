@@ -16,7 +16,7 @@ function [loadedData, fileName, eegFig, emgFig, manifestString] = quickViewStepI
 PARADIGM_CUED = 'Cued';
 
 %% Get the tokens
-subSessMovTokens = regexp(fileName, '.*sub([0-9]+)_sess([0-9]+)_mov([0-9]+)', 'tokens');
+subSessMovTokens = regexp(fileName, '.*sub([0-9]+)_sess([0-9]+).*', 'tokens');
 subSessMovTokens = subSessMovTokens{1};
 
 %% Load the file
@@ -51,7 +51,9 @@ options.onsetsVector2 = adjustedOnsetsVector;
 
 options.legendInfo = {'Processed EMG'};
 options.title = sprintf('EMG: %s', manifestString);
-emgFig = plotChannelData(loadedData.processedEmgData, loadedData.sampleRate, options);
+if(~isempty(loadedData.processedEmgData))
+    emgFig = plotChannelData(loadedData.processedEmgData, loadedData.sampleRate, options);
+end
 
 % Plot eegData
 options.legendInfo = loadedData.eegChannels;
