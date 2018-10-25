@@ -66,6 +66,7 @@ plot([1 4], [25 25], 'LineWidth', 2, 'Color', 'black');
 text(2, 25.5, '***', 'FontSize', 18, 'FontWeight', 'bold');
 %yticks(gca, [0 0.5 1 1.5 2 2.5 3 3.5 4])
 title('Dorsiflexion')
+legend({'GS', 'Proto'}, 'Box', 'off', 'Location', 'northwest');
 
 % Plot power across bands in step
 errorData = [std(values_gsStep_d, 'omitnan') std(values_protoStepA_d, 'omitnan');...
@@ -89,6 +90,7 @@ plot([1 4], [25 25], 'LineWidth', 2, 'Color', 'black');
 text(2, 25.5, '***', 'FontSize', 18, 'FontWeight', 'bold');
 %yticks(gca, [0 0.5 1 1.5 2 2.5 3 3.5 4])
 title('Step on/off')
+legend({'GS', 'Proto'}, 'Box', 'off', 'Location', 'northwest');
 %% Plot S/D ratio
 errorData = [std(deltaBand_gs, 'omitnan') std(deltaBand_proto_A, 'omitnan');...
     std(thetaBand_gs, 'omitnan') std(thetaBand_proto_A, 'omitnan');...

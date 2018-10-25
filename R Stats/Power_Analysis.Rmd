@@ -31,7 +31,7 @@ require(fBasics)
 require(ggpubr)
 require(reshape2)
 require(phia)
-require(lsmeans)
+require(emmeans)
 require(multcomp)
 
 # function for is nan
@@ -93,7 +93,7 @@ plot(ratioModel)
 ggqqplot(resid(ratioModel))
 summary(ratioModel)
 Anova(ratioModel)
-lsmeans(ratioModel, pairwise ~ sysName | bandName, adjust = "tukey")
+emmeans(ratioModel, pairwise ~ sysName | bandName, adjust = "tukey")
 ```
 
 ## Dorsiflexion
@@ -103,7 +103,7 @@ plot(dorsPowerModel)
 ggqqplot(resid(dorsPowerModel))
 summary(dorsPowerModel)
 Anova(dorsPowerModel)
-lsmeans(dorsPowerModel, pairwise ~ sysName | bandName, adjust = "tukey")
+emmeans(dorsPowerModel, pairwise ~ sysName | bandName, adjust = "tukey")
 ```
 
 ## Step on/off
@@ -113,5 +113,5 @@ plot(stepPowerModel)
 ggqqplot(resid(stepPowerModel))
 summary(stepPowerModel)
 Anova(stepPowerModel)
-lsmeans(stepPowerModel, pairwise ~ sysName | bandName, adjust = "tukey")
+emmeans(stepPowerModel, pairwise ~ sysName | bandName, adjust = "tukey")
 ```

@@ -34,8 +34,9 @@ require(fBasics)
 require(ggpubr)
 require(reshape2)
 require(phia)
-require(lsmeans)
+require(emmeans)
 require(multcomp)
+require(jtools)
 
 # function for is nan
 is.nan.data.frame <- function(x)
@@ -76,7 +77,7 @@ plot(pnModel)
 ggqqplot(resid(pnModel))
 summary(pnModel)
 Anova(pnModel)
-lsmeans(pnModel, pairwise ~ sysName | mvName, adjust = "tukey")
+emmeans(pnModel, pairwise ~ sysName | mvName, adjust = "tukey")
 ```
 
 # Peak negative value time (PNT)
@@ -96,7 +97,7 @@ plot(pntModel)
 ggqqplot(resid(pntModel))
 summary(pntModel)
 Anova(pntModel)
-lsmeans(pntModel, pairwise ~ sysName | mvName, adjust = "tukey")
+emmeans(pntModel, pairwise ~ sysName | mvName, adjust = "tukey")
 ```
 
 # Premovement noise (PMN)
@@ -115,7 +116,8 @@ plot(pmnModel)
 ggqqplot(resid(pmnModel))
 summary(pmnModel)
 Anova(pmnModel)
-lsmeans(pmnModel, pairwise ~ sysName | mvName, adjust = "tukey")
+emmeans(pmnModel, pairwise ~ sysName | mvName, adjust = "tukey")
+cat_plot(pmnModel, pred = mvName, modx = sysName, geom = "line")
 ```
 
 # Signal to noise ratio (SNR)
@@ -134,5 +136,5 @@ plot(snrModel)
 ggqqplot(resid(snrModel))
 summary(snrModel)
 Anova(snrModel)
-lsmeans(snrModel, pairwise ~ sysName | mvName, adjust = "tukey")
+emmeans(snrModel, pairwise ~ sysName | mvName, adjust = "tukey")
 ```

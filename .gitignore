@@ -3,3 +3,6 @@ Data/
 *.m~
 .Rproj.user
 .Rhistory
+*.csv
+*.pdf
+

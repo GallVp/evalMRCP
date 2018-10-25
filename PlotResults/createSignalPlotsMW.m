@@ -16,7 +16,8 @@ FS                  = 125;
 TIME_BEFORE_EVENT   = 3;
 
 if nargin < 1
-    forParts    = 1:5;
+    forParts    = 1:6;
+    forMovement = 1;
 end
 
 numParts =  length(forParts);
