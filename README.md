@@ -4,19 +4,19 @@ evalMRCP, which stands for evaluation of the Movement-Related Cortical Potential
 
 <ol>
     <li>
-    <b>Step I:</b> In this step data is imported from different file tyes depending on the recording system and saved as \emph{.mat} files with uniform file and variable naming.
+    <b>Step I:</b> In this step data is imported from different file tyes depending on the recording system and saved as <i>.mat</i> files with uniform file and variable naming.
     </li>
     <li>
     <b>Step II:</b> In this step sEMG events are detected and adjusted by visual examination using the emgGO toolbox.
     </li>
     <li>
-    <b>Step III:</b> In this step epochs are first manually removed by visual inspection, then epochs with eye blinks and movement artefacts are removed using the \mbox{EEGLAB} \emph{runica} algorithm, and finally, epochs are removed by applying a peak-peak threshold.
+    <b>Step III:</b> In this step epochs are first manually removed by visual inspection, then epochs with eye blinks and movement artefacts are removed using the <i>EEGLAB</i> <i>runica</i> algorithm, and finally, epochs are removed by applying a peak-peak threshold.
     </li>
     <li>
     <b>Step IV:</b> In this step extra channels are removed, and latent variables are derived.
     </li>
     <li>
-    <b>Step V:</b> In this step data from individual files is collated into tables in long format and exported as \emph{.csv} files.
+    <b>Step V:</b> In this step data from individual files is collated into tables in long format and exported as <i>.csv</i> files.
     </li>
     <li>
     <b>Step VI:</b> In this step statistical analysis is performed and results are plotted.
