@@ -1,3 +1,9 @@
+[submodule "emgGO"]
+	path = emgGO
+	url = https://github.com/GallVp/emgGO
 [submodule "visualEEG"]
 	path = visualEEG
 	url = https://github.com/GallVp/visualEEG.git
+[submodule "eeglab"]
+	path = eeglab
+	url = https://github.com/sccn/eeglab
